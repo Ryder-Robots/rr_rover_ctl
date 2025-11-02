@@ -4,19 +4,19 @@ import java.time.Duration;
 
 public class Heartbeat {
     private final Header header;
-    private final Duration duration;
-    private final Duration actual_duration;
+    private final RrDuration duration;
+    private final RrDuration actual_duration;
     private final String hb_link;
 
     public Header getHeader() {
         return header;
     }
 
-    public Duration getDuration() {
+    public RrDuration getDuration() {
         return duration;
     }
 
-    public Duration getActual_duration() {
+    public RrDuration getActual_duration() {
         return actual_duration;
     }
 
@@ -37,8 +37,8 @@ public class Heartbeat {
 
     public static class Builder {
         private  Header header;
-        private  Duration duration;
-        private  Duration actual_duration;
+        private  RrDuration duration;
+        private  RrDuration actual_duration;
         private String hb_link;
 
         public Heartbeat.Builder withHeader(Header header) {
@@ -47,7 +47,7 @@ public class Heartbeat {
         }
 
         public Heartbeat.Builder withDuration(Duration duration) {
-            this.duration = duration;
+            this.duration = RrDuration.builder().withDuration(duration).build();
             return this;
         }
 
@@ -57,7 +57,7 @@ public class Heartbeat {
         }
 
         public Heartbeat.Builder withActual_Duration(Duration actual_duration) {
-            this.actual_duration = actual_duration;
+            this.actual_duration = RrDuration.builder().withDuration(actual_duration).build();
             return this;
         }
 

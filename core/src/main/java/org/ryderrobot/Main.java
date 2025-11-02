@@ -19,8 +19,8 @@ import java.time.Duration;
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
-//    private Controller controller;
     private final RrControllerListener listener = new RrControllerListenerImpl();
+
 
     @Override
     public void create() {
@@ -40,12 +40,18 @@ public class Main extends ApplicationAdapter {
     public void render() {
         Json json = new Json();
         String jsonStr = "";
+        float delta = Gdx.graphics.getDeltaTime();
         if (listener.isRequest()) {
             Joy msg = listener.getMessage();
             jsonStr = json.toJson(msg);
         } else {
+            long secondsPart = (long) delta;  // integer seconds (3)
+            long nanosPart = (long) ((delta - secondsPart) * 1_000_000_000);  // fractional nanoseconds (456 million)
+
+            Duration duration = Duration.ofSeconds(secondsPart, nanosPart);
             Heartbeat heartbeat = Heartbeat.builder()
                 .withDuration(Duration.ofMillis(1000 / 200))
+                .withActual_Duration(duration)
                 .withHb_Link(Joy.LINK)
                 .build();
             jsonStr = json.toJson(heartbeat);
