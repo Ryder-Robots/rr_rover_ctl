@@ -39,8 +39,7 @@ public class RrControllerListenerImpl implements RrControllerListener {
 
     @Override
     public boolean isRequest() {
-        isRequest = true;
-        return false;
+        return isRequest;
     }
 
 
@@ -67,9 +66,10 @@ public class RrControllerListenerImpl implements RrControllerListener {
         return Joy.builder()
             .withAxes(axes)
             .withButtons(buttons)
-            .build();
+            .build(++seq);
     }
 
     private boolean isRequest = false;
     private Controller controller = null;
+    private int seq = 0;
 }

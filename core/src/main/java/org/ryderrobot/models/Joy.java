@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Joy {
 
+    public static final String LINK = "joy_ps4";
     private final Header header;
     private final List<Float> axes;
     private final List<Boolean> buttons;
@@ -53,8 +54,11 @@ public class Joy {
             return this;
         }
 
-        public Joy build() {
-            header = Header.builder().build();
+        public Joy build(int seq) {
+            header = Header.builder()
+                .withFrameId(LINK)
+                .withSeq(seq)
+                .build();
             return new Joy(this);
         }
     }
