@@ -13,8 +13,8 @@ public class RrControllerListenerImpl implements RrControllerListener {
     /**
      * trim of deadzone,  set at 0.05 (May be a little high)
      *
-     * @param input
-     * @return
+     * @param input axes input
+     * @return normalized axes output after deadzone subtracted.
      */
     private float trimDeadzone(float input) {
         return (Math.abs(input) < 0.05) ? 0 : input;

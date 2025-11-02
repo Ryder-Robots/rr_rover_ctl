@@ -13,6 +13,9 @@ import org.ryderrobot.models.Heartbeat;
 import org.ryderrobot.models.Joy;
 
 import com.badlogic.gdx.utils.Json;
+import org.ryderrobot.net.NetClient;
+import org.ryderrobot.net.UDPClient;
+
 import java.time.Duration;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -20,7 +23,7 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
     private final RrControllerListener listener = new RrControllerListenerImpl();
-
+    private NetClient client = new UDPClient();
 
     @Override
     public void create() {
@@ -29,6 +32,14 @@ public class Main extends ApplicationAdapter {
         }
         Controller controller = Controllers.getCurrent();
         controller.addListener(listener);
+
+        // TODO: currently robot is hard coded, this will need to fixed.
+        Gdx.app.debug("main", "attempting to open network connection");
+        try {
+            client.init("192.168.2.3", 8888);
+        } catch (Exception ex) {
+            Gdx.app.error("main", "can not create client", ex);
+        }
 
         // throttle speed to around 5 frames p/second, 200ms
         Gdx.graphics.setForegroundFPS(1000 / 200);
@@ -56,6 +67,11 @@ public class Main extends ApplicationAdapter {
                 .build();
             jsonStr = json.toJson(heartbeat);
         }
+        try {
+            client.sendMessage(jsonStr);
+        } catch (Exception e) {
+            Gdx.app.error("main", "could not send message to robotL:", e);
+        }
         // reset it, this should stop over-processing of robot, when there is nothing to do.
         listener.reset();
         Gdx.app.debug("Main", "received joystick input");
@@ -70,5 +86,6 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         image.dispose();
+        client.close();
     }
 }
