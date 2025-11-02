@@ -8,6 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class RrControllerListenerImpl implements RrControllerListener {
+
+
+    /**
+     * trim of deadzone,  set at 0.05 (May be a little high)
+     *
+     * @param input
+     * @return
+     */
+    private float trimDeadzone(float input) {
+        return (Math.abs(input) < 0.05) ? 0 : input;
+    }
+
+
     @Override
     public void connected(Controller controller) {
         this.controller = controller;
@@ -32,8 +45,11 @@ public class RrControllerListenerImpl implements RrControllerListener {
 
     @Override
     public boolean axisMoved(Controller controller, int i, float v) {
-        isRequest = true;
-        this.controller = controller;
+
+        if (trimDeadzone(v) > 0) {
+            isRequest = true;
+            this.controller = controller;
+        }
         return false;
     }
 

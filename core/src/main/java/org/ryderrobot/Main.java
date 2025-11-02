@@ -56,6 +56,8 @@ public class Main extends ApplicationAdapter {
                 .build();
             jsonStr = json.toJson(heartbeat);
         }
+        // reset it, this should stop over-processing of robot, when there is nothing to do.
+        listener.reset();
         Gdx.app.debug("Main", "received joystick input");
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
