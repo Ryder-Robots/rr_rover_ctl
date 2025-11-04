@@ -46,9 +46,10 @@ public class RrControllerListenerImpl implements RrControllerListener {
     @Override
     public boolean axisMoved(Controller controller, int i, float v) {
 
-        if (trimDeadzone(v) > 0) {
+        if (trimDeadzone(v) != 0) {
             isRequest = true;
             this.controller = controller;
+            return true;
         }
         return false;
     }
