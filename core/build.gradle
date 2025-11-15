@@ -1,6 +1,8 @@
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 eclipse.project.name = appName + '-core'
 
+apply plugin: 'com.google.protobuf'
+
 dependencies {
   api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -10,8 +12,33 @@ dependencies {
   api "com.crashinvaders.lml:gdx-lml:$lmlVersion"
   api "com.github.MrStahlfelge.gdx-websockets:core:$websocketVersion"
   api "de.golfgl.gdxcontrollerutils:gdx-controllerutils-mapping:$controllerMappingVersion"
+  implementation("com.google.protobuf:protobuf-java:$protobufVersion") // or latest version
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
 }
+
+// Protobuf configuration
+protobuf {
+  // Specify Protobuf version (align with protoc and protobuf-java)
+  protoc {
+    artifact = "com.google.protobuf:protoc:$protobufVersion"  // Matches protoc version
+  }
+
+
+  // Configure code generation for Java
+  generateProtoTasks {
+    all().each { task ->
+      task.builtins {
+        java {
+//          srcDir ['build/generated/source/proto/main/java']
+        }
+      }
+    }
+  }
+}
+
+sourceSets.main.java.srcDirs += "${protobuf.generatedFilesBaseDir}/protobuf/main/java"
+
+

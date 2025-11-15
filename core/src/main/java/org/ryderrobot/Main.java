@@ -11,14 +11,17 @@ import org.ryderrobot.listeners.RrControllerListener;
 import org.ryderrobot.listeners.RrControllerListenerImpl;
 import org.ryderrobot.models.Heartbeat;
 import org.ryderrobot.models.Joy;
+//import org.ryderrobot.generated.
 
-import com.badlogic.gdx.utils.Json;
 import org.ryderrobot.net.NetClient;
 import org.ryderrobot.net.UDPClient;
-
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
+ */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
@@ -48,35 +51,47 @@ public class Main extends ApplicationAdapter {
         image = new Texture("libgdx.png");
     }
 
+    private List<Integer> convertArray(final List<Boolean> inbound) {
+        List<Integer> out = new ArrayList<>();
+        for (Boolean i : inbound) {
+            out.add((i)?1:0);
+        }
+        return out;
+    }
+
     @Override
     public void render() {
 
-            Json json = new Json();
-            String jsonStr = "";
-            float delta = Gdx.graphics.getDeltaTime();
-            if (listener.isRequest()) {
-                Joy msg = listener.getMessage();
-                jsonStr = json.toJson(msg);
-            } else {
-                long secondsPart = (long) delta;  // integer seconds (3)
-                long nanosPart = (long) ((delta - secondsPart) * 1_000_000_000);  // fractional nanoseconds (456 million)
+        float delta = Gdx.graphics.getDeltaTime();
+        if (listener.isRequest()) {
 
-                Duration duration = Duration.ofSeconds(secondsPart, nanosPart);
-                Heartbeat heartbeat = Heartbeat.builder()
-                    .withDuration(Duration.ofMillis(fps))
-                    .withActual_Duration(duration)
-                    .withHb_Link(Joy.LINK)
-                    .build();
-                jsonStr = json.toJson(heartbeat);
-            }
-            try {
-                client.sendMessage(jsonStr);
-            } catch (Exception e) {
-                Gdx.app.error("main", "could not send message to robotL:", e);
-            }
-            // reset it, this should stop over-processing of robot, when there is nothing to do.
-            listener.reset();
-            Gdx.app.debug("Main", "received joystick input");
+            Inbound.Joystick outMsg = Inbound.Joystick.newBuilder()
+                .addAllAxes(listener.getMessage().getAxes())
+                .addAllButtons(convertArray(listener.getMessage().getButtons()))
+                .build();
+
+            Joy msg = listener.getMessage();
+            jsonStr = json.toJson(msg);
+        } else {
+            long secondsPart = (long) delta;  // integer seconds (3)
+            long nanosPart = (long) ((delta - secondsPart) * 1_000_000_000);  // fractional nanoseconds (456 million)
+
+            Duration duration = Duration.ofSeconds(secondsPart, nanosPart);
+            Heartbeat heartbeat = Heartbeat.builder()
+                .withDuration(Duration.ofMillis(fps))
+                .withActual_Duration(duration)
+                .withHb_Link(Joy.LINK)
+                .build();
+            jsonStr = json.toJson(heartbeat);
+        }
+        try {
+            client.sendMessage(jsonStr);
+        } catch (Exception e) {
+            Gdx.app.error("main", "could not send message to robotL:", e);
+        }
+        // reset it, this should stop over-processing of robot, when there is nothing to do.
+        listener.reset();
+        Gdx.app.debug("Main", "received joystick input");
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();

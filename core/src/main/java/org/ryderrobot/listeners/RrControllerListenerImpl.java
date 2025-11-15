@@ -2,7 +2,6 @@ package org.ryderrobot.listeners;
 
 import com.badlogic.gdx.controllers.Controller;
 import org.ryderrobot.models.Joy;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +10,10 @@ public class RrControllerListenerImpl implements RrControllerListener {
 
 
     /**
-     * trim of deadzone,  set at 0.05 (May be a little high)
+     * trim of dead-zone,  set at 0.05 (Maybe a little high)
      *
      * @param input axes input
-     * @return normalized axes output after deadzone subtracted.
+     * @return normalized axes output after dead-zone subtracted.
      */
     private float trimDeadzone(float input) {
         return (Math.abs(input) < 0.05) ? 0 : input;
